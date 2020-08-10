@@ -192,6 +192,10 @@ btnHintTen_10 = InlineKeyboardButton(config.hint_one_coin, callback_data='btnHin
 btnHintTen_11 = InlineKeyboardButton(config.hint_three_coin, callback_data='btnHintTen_11')
 btnHintTen_12 = InlineKeyboardButton(config.hint_five_coin, callback_data='btnHintTen_12')
 
+btnHintEleven_1 = InlineKeyboardButton(config.hint_one_coin, callback_data='btnHintEleven_1')
+btnHintEleven_2 = InlineKeyboardButton(config.hint_three_coin, callback_data='btnHintEleven_2')
+btnHintEleven_3 = InlineKeyboardButton(config.hint_five_coin, callback_data='btnHintEleven_3')
+
 kb_HintOne_1 = InlineKeyboardMarkup().add(btnHintOne_1, btnHintOne_2, btnHintOne_3)
 kb_HintOne_2 = InlineKeyboardMarkup().add(btnHintOne_4, btnHintOne_5, btnHintOne_6)
 kb_HintOne_3 = InlineKeyboardMarkup().add(btnHintOne_7, btnHintOne_8, btnHintOne_9)
@@ -241,3 +245,5 @@ kb_HintTen_1 = InlineKeyboardMarkup().add(btnHintTen_1, btnHintTen_2, btnHintTen
 kb_HintTen_2 = InlineKeyboardMarkup().add(btnHintTen_4, btnHintTen_5, btnHintTen_6)
 kb_HintTen_3 = InlineKeyboardMarkup().add(btnHintTen_7, btnHintTen_8, btnHintTen_9)
 kb_HintTen_4 = InlineKeyboardMarkup().add(btnHintTen_10, btnHintTen_11, btnHintTen_12)
+
+kb_HintEleven_1 = InlineKeyboardMarkup().add(btnHintEleven_1, btnHintEleven_2, btnHintEleven_3)

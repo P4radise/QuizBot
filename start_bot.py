@@ -144,10 +144,15 @@ async def process_send_start_location_data(message: types.Message):
 @dp.message_handler(regexp = '^' + config.start_location + r'\w*')
 async def process_check_start_location(message: types.Message):
     async with aiosqlite3.connect("quizbot.db") as conn:
-        async with conn.cursor() as cursor: 
-            message_id = await bot.send_message(message.from_user.id, config.check_start_location, reply_markup=kb.kb_ChoiseActionLocation)
-            await cursor.execute("UPDATE command SET last_hint_id={} WHERE user_id={}".format(message_id.message_id, message.from_user.id))
-            await conn.commit()
+        async with conn.cursor() as cursor:
+            await cursor.execute("SELECT end_game FROM command WHERE user_id={}".format(message.from_user.id))
+            end_game = int(re.sub(r'[\,\)\(\']', '', str(await cursor.fetchone())))
+            if end_game == 0:
+                message_id = await bot.send_message(message.from_user.id, config.check_start_location, reply_markup=kb.kb_ChoiseActionLocation)
+                await cursor.execute("UPDATE command SET last_hint_id={} WHERE user_id={}".format(message_id.message_id, message.from_user.id))
+                await conn.commit()
+            else:
+                await bot.send_message(message.from_user.id, config.say_you_end_game)
 
 @dp.message_handler(lambda message: message.text in [config.say_start_later_location])
 async def process_send_start_later_location(message: types.Message):
@@ -197,7 +202,10 @@ async def process_send_legend(message: types.Message):
                         await cursor.execute("UPDATE command SET hidden_location='{}' WHERE user_id={}".format(config.scientist + ';' + config.blitz, message.from_user.id))
                     await conn.commit()
                 else:
-                    await bot.send_message(message.from_user.id, config.say_you_already_passed_location + config.blitz)
+                    if end_game == 0:
+                        await bot.send_message(message.from_user.id, config.say_you_already_passed_location + config.blitz)
+                    else:
+                        await bot.send_message(message.from_user.id, config.say_you_end_game)
             if message.text == config.scientist:
                 if re.search(config.scientist, hidden_location) is None:
                     btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask13')
@@ -210,7 +218,11 @@ async def process_send_legend(message: types.Message):
                         await cursor.execute("UPDATE command SET hidden_location='{}' WHERE user_id={}".format(config.blitz + ';' + config.scientist, message.from_user.id))
                     await conn.commit()
                 else:
-                    await bot.send_message(message.from_user.id, config.say_you_already_passed_location + config.scientist)
+                    if end_game == 0:
+                        await bot.send_message(message.from_user.id, config.say_you_already_passed_location + config.scientist)
+                    else:
+                        await bot.send_message(message.from_user.id, config.say_you_end_game)
+
             if message.text == config.say_continue_location:
                 sql_get_location_number = "SELECT " + current_location + " \
                                             FROM locations v_loc \
@@ -269,13 +281,10 @@ async def process_send_legend(message: types.Message):
                     await bot.send_photo(message.from_user.id, open('legend/legend_ten.png', 'rb'), reply_markup=kb_Task)
                     await bot.send_photo(chat_id, open('legend/legend_ten.png', 'rb'))
                 if config.location_eleven in current_location:
-                    if end_game == 0:
-                        btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask11')
-                        kb_Task = InlineKeyboardMarkup().add(btnTask)
-                        await bot.send_photo(message.from_user.id, open('legend/legend_eleven.png', 'rb'), reply_markup=kb_Task)
-                        await bot.send_photo(chat_id, open('legend/legend_eleven.png', 'rb'))
-                    else:
-                        await bot.send_message(message.from_user.id, config.say_you_end_game)
+                    btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask11')
+                    kb_Task = InlineKeyboardMarkup().add(btnTask)
+                    await bot.send_photo(message.from_user.id, open('legend/legend_eleven.png', 'rb'), reply_markup=kb_Task)
+                    await bot.send_photo(chat_id, open('legend/legend_eleven.png', 'rb'))
 
 @dp.callback_query_handler(regexp = r'^btnGetTask\w*')
 async def process_send_additional_location_data(call: types.CallbackQuery):
@@ -330,7 +339,7 @@ async def process_send_additional_location_data(call: types.CallbackQuery):
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_ten+'_'+config.task_number1, option=config.options_task_ten1.get('option'), answer=config.options_task_ten1.get('answer'), hint_number=kb.kb_HintTen_1, location_number=next_location, cursor=cursor, conn=conn)
                 await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.location_ten)
             if call.data == 'btnGetTask11':
-                await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_eleven+'_'+config.task_number1, open_period=480, option=config.options_task_eleven.get('option'), answer=config.options_task_eleven.get('answer'), cursor=cursor, conn=conn)
+                await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_eleven+'_'+config.task_number1, open_period=480, option=config.options_task_eleven.get('option'), answer=config.options_task_eleven.get('answer'), hint_number=kb.kb_HintEleven_1, cursor=cursor, conn=conn)
                 await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.location_eleven)
 
 async def quiz_poll(user_id=0, delete_message=True, last_hint_id=None, correct_answer=None, coins_command=None, coin=None, artifact=None, artifact_command=None, chat_id=0, end_date=None, task=None, open_period=None, option=None, answer=None, hint_number=None, location_number=None, cursor=None, conn=None):
@@ -399,20 +408,21 @@ async def quiz_poll(user_id=0, delete_message=True, last_hint_id=None, correct_a
         else:
             await bot.send_photo(user_id, open('task/' + task + '.png', 'rb'))
         await bot.send_photo(chat_id, open('task/' + task + '.png', 'rb'))
-        if open_period is None:
-            if 'dop' in task:
-                if end_date is None:
-                    end_date = calendar.timegm((datetime.utcnow() + timedelta(minutes=6)).timetuple())
-                poll_data = await bot.send_poll(chat_id=user_id, question=task, options=option, is_anonymous=False, type='quiz', correct_option_id=answer, close_date=end_date)
-                await cursor.execute("UPDATE command SET end_date={} WHERE user_id={}".format(end_date, user_id))
-            else:
-                if end_date is None:
-                    end_date = calendar.timegm((datetime.utcnow() + timedelta(minutes=15)).timetuple())
-                poll_data = await bot.send_poll(chat_id=user_id, question=task, options=option, is_anonymous=False, type='quiz', correct_option_id=answer, close_date=end_date)
-                last_hint_id = await bot.send_message(user_id, config.hints, reply_markup=hint_number)
-                await cursor.execute("UPDATE command SET end_date={}, last_hint_id={} WHERE user_id={}".format(end_date, last_hint_id.message_id, user_id))
+        if 'dop' in task:
+            if end_date is None:
+                end_date = calendar.timegm((datetime.utcnow() + timedelta(minutes=6)).timetuple())
+            poll_data = await bot.send_poll(chat_id=user_id, question=task, options=option, is_anonymous=False, type='quiz', correct_option_id=answer, close_date=end_date)
+            await cursor.execute("UPDATE command SET end_date={} WHERE user_id={}".format(end_date, user_id))
         else:
-            poll_data = await bot.send_poll(chat_id=user_id, question=task, options=option, is_anonymous=False, type='quiz', correct_option_id=answer, open_period=open_period)
+            if end_date is None:
+                end_date = calendar.timegm((datetime.utcnow() + timedelta(minutes=15)).timetuple())
+            if open_period is None:
+                poll_data = await bot.send_poll(chat_id=user_id, question=task, options=option, is_anonymous=False, type='quiz', correct_option_id=answer, close_date=end_date)
+            else:
+                poll_data = await bot.send_poll(chat_id=user_id, question=task, options=option, is_anonymous=False, type='quiz', correct_option_id=answer, open_period=open_period)
+            last_hint_id = await bot.send_message(user_id, config.hints, reply_markup=hint_number)
+            await cursor.execute("UPDATE command SET end_date={}, last_hint_id={} WHERE user_id={}".format(end_date, last_hint_id.message_id, user_id))
+
         await cursor.execute("UPDATE poll SET poll_id={}, question='{}', correct_answer={} WHERE user_id={}".format(poll_data.poll.id, task, answer, user_id))
         await conn.commit()
 
@@ -896,6 +906,13 @@ async def process_check_task(call: types.CallbackQuery):
                 await send_hint_data(call, last_hint_id, coins_command, config.hint_ten11, 3, cursor, conn)
             if call.data == 'btnHintTen_12':
                 await send_hint_data(call, last_hint_id, coins_command, config.hint_ten12, 5, cursor, conn)
+
+            if call.data == 'btnHintEleven_1':
+                await send_hint_data(call, last_hint_id, coins_command, config.hint_eleven1, 1, cursor, conn)
+            if call.data == 'btnHintEleven_2':
+                await send_hint_data(call, last_hint_id, coins_command, config.hint_eleven2, 3, cursor, conn)
+            if call.data == 'btnHintEleven_3':
+                await send_hint_data(call, last_hint_id, coins_command, config.hint_eleven3, 5, cursor, conn)
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
