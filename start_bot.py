@@ -32,7 +32,7 @@ async def process_start(message: types.Message):
                 await cursor.execute("INSERT INTO command VALUES ({},'{}','{}','{}','{}',{},{},{},'{}',{},{},{})".format(message.from_user.id, 'location_one', 'location_two', '', '', 30, 0, 0, '', 0, 0, 0))
                 await conn.commit()
 
-    await bot.send_messagse(message.from_user.id, config.select_color_button, reply_markup=kb.kb_ColorCommand)
+    await bot.send_message(message.from_user.id, config.select_color_button, reply_markup=kb.kb_ColorCommand)
 
 @dp.message_handler(lambda message: message.text in [config.color_white, config.color_gray, config.color_red, config.color_orange, config.color_yellow, config.color_green, config.color_blue, config.color_havyblue, config.color_purple, config.color_pink])
 async def process_check_command(message: types.Message):
@@ -57,7 +57,7 @@ async def process_send_chat_link(message: types.Message):
         async with conn.cursor() as cursor: 
             await cursor.execute("UPDATE command SET status='{}' WHERE user_id={}".format(message.text, message.from_user.id))
             await conn.commit()
-            cursor.execute("SELECT color FROM command WHERE user_id={}".format(message.from_user.id))
+            await cursor.execute("SELECT color FROM command WHERE user_id={}".format(message.from_user.id))
             color = re.sub(r'[,\'\)\(]', '', str(await cursor.fetchone()))
 
             await bot.send_message(message.from_user.id, config.say_you_member + color, reply_markup=kb.kb_remove)
@@ -109,13 +109,13 @@ async def process_send_preview_message(message: types.Message):
                         (os.environ.get('CHAT_ID10'), config.color_pink, 'team_map_pink', config.location_ten, config.location_one, config.location_two, config.location_three, config.location_four, config.location_five, config.location_six, config.location_seven, config.location_eight, config.location_nine, config.location_eleven)]
             try:
                 await cursor.execute(sql_get_chat_id)
-                await location_data = cursor.fetchone()
+                location_data = await cursor.fetchone()
             except Exception:
                 await cursor.execute("CREATE TABLE locations (chat_id INTEGER, location_color TEXT, team_map TEXT, location_one TEXT, location_two TEXT, location_three TEXT, location_four TEXT, location_five TEXT, location_six TEXT, location_seven TEXT, location_eight TEXT, location_nine TEXT, location_ten TEXT, location_eleven TEXT)")
                 await cursor.executemany("INSERT INTO locations VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", locations)
                 await conn.commit()
                 await cursor.execute(sql_get_chat_id)
-                await location_data = cursor.fetchone()
+                location_data = await cursor.fetchone()
 
             chat_id = re.sub(r'[,\)\(]', '', str(location_data))
             await cursor.execute("UPDATE command SET start_time={} WHERE user_id={}".format(calendar.timegm(datetime.utcnow().timetuple()), message.from_user.id))
@@ -333,7 +333,7 @@ async def process_send_additional_location_data(call: types.CallbackQuery):
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_eleven+'_'+config.task_number1, open_period=480, option=config.options_task_eleven.get('option'), answer=config.options_task_eleven.get('answer'), cursor=cursor, conn=conn)
                 await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.location_eleven)
 
-async def quiz_poll(user_id=0, delete_message=True, last_hint_id=None, correct_answer=None, coins_command=None, coin=None, artifact=None, artifact_command=None, chat_id=0, end_date=None, task=None, open_period=None, option=None, answer=None, hint_number=None, location_number=None, cursor, conn):
+async def quiz_poll(user_id=0, delete_message=True, last_hint_id=None, correct_answer=None, coins_command=None, coin=None, artifact=None, artifact_command=None, chat_id=0, end_date=None, task=None, open_period=None, option=None, answer=None, hint_number=None, location_number=None, cursor=None, conn=None):
     try:
         await cursor.execute("SELECT * FROM poll WHERE user_id={}".format(user_id))        
         data = await cursor.fetchone()
@@ -390,7 +390,7 @@ async def quiz_poll(user_id=0, delete_message=True, last_hint_id=None, correct_a
                                      JOIN command v_com on (v_com.color = v_loc.location_color) \
                                     WHERE user_id={}".format(user_id)
         await cursor.execute(sql_get_location_number)
-        btnStartLocation = KeyboardButton(config.start_location + re.sub(r'[\)\(\']', '', str(cursor.fetchone()))[:-1])
+        btnStartLocation = KeyboardButton(config.start_location + re.sub(r'[\)\(\']', '', str(await cursor.fetchone()))[:-1])
         kb_startLocation = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True).add(btnStartLocation)
 
     if task is not None:
