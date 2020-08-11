@@ -656,10 +656,10 @@ async def process_poll_handler(quiz_answer: types.Poll):
                 artifact_command = re.sub(r' ', '', command_data[1])
                 running_time = re.split(r'\.', str(datetime.now() - datetime.fromtimestamp(int(re.sub(r' ', '', command_data[2])))), 1)[0]
 
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_eleven + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command + config.end_running_time + str(running_time))
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_eleven + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command + config.end_running_time + str(running_time))
                 await bot.send_message(quiz_answer.user.id, config.say_you_end_game + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command + config.end_running_time + str(running_time))
                 await bot.send_message(chat_id, config.say_you_end_game + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command + config.end_running_time + str(running_time))
-                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), 'Цвет команды: ' + color_command + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command + config.end_running_time + str(running_time))
+                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), 'Цвет команды: ' + color_command + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command + config.end_running_time + str(running_time))
                 await cursor.execute("UPDATE command SET hidden_location='{}', end_game={} WHERE user_id={}".format(config.scientist + ';' + config.blitz, 1, quiz_answer.user.id))
                 await conn.commit()
 
