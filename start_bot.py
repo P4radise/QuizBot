@@ -463,7 +463,11 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_one+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_one4.get('coin'), chat_id=chat_id, artifact='artifact_one', artifact_command=artifact_command, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_one + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
+                await cursor.execute("SELECT coins, artifact FROM command WHERE user_id={}".format(quiz_answer.user.id))
+                command_data = re.split(r',', re.sub(r'[\)\(]', '', str(await cursor.fetchone())))
+                coins_command = re.sub(r' ', '', command_data[0])
+                artifact_command = re.sub(r' ', '', command_data[1])
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_one + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command)
 
             if question == config.task_two+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_two1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_two+'_'+config.task_number2, option=config.options_task_two2.get('option'), answer=config.options_task_two2.get('answer'), hint_number=kb.kb_HintTwo_2, cursor=cursor, conn=conn)
@@ -474,7 +478,11 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_two+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_two4.get('coin'), chat_id=chat_id, artifact='artifact_two', artifact_command=artifact_command, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_two + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
+                await cursor.execute("SELECT coins, artifact FROM command WHERE user_id={}".format(quiz_answer.user.id))
+                command_data = re.split(r',', re.sub(r'[\)\(]', '', str(await cursor.fetchone())))
+                coins_command = re.sub(r' ', '', command_data[0])
+                artifact_command = re.sub(r' ', '', command_data[1])
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_two + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command)
 
             if question == config.task_three+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_three1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_three+'_'+config.task_number2, option=config.options_task_three2.get('option'), answer=config.options_task_three2.get('answer'), hint_number=kb.kb_HintThree_2, cursor=cursor, conn=conn)
@@ -485,7 +493,11 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_three+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_three4.get('coin'), chat_id=chat_id, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_three + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
+                await cursor.execute("SELECT coins, artifact FROM command WHERE user_id={}".format(quiz_answer.user.id))
+                command_data = re.split(r',', re.sub(r'[\)\(]', '', str(await cursor.fetchone())))
+                coins_command = re.sub(r' ', '', command_data[0])
+                artifact_command = re.sub(r' ', '', command_data[1])
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_three + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command)
 
             if question == config.task_four+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_four1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_four+'_'+config.task_number2, option=config.options_task_four2.get('option'), answer=config.options_task_four2.get('answer'), hint_number=kb.kb_HintFour_2, cursor=cursor, conn=conn)
@@ -496,7 +508,11 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_four+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_four4.get('coin'), chat_id=chat_id, artifact='artifact_four', artifact_command=artifact_command, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_four + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
+                await cursor.execute("SELECT coins, artifact FROM command WHERE user_id={}".format(quiz_answer.user.id))
+                command_data = re.split(r',', re.sub(r'[\)\(]', '', str(await cursor.fetchone())))
+                coins_command = re.sub(r' ', '', command_data[0])
+                artifact_command = re.sub(r' ', '', command_data[1])
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_four + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command)
 
             if question == config.task_five+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_five1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_five+'_'+config.task_number2, option=config.options_task_five2.get('option'), answer=config.options_task_five2.get('answer'), hint_number=kb.kb_HintFive_2, cursor=cursor, conn=conn)
@@ -507,7 +523,11 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_five+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_five4.get('coin'), chat_id=chat_id, artifact='artifact_five', artifact_command=artifact_command, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_five + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
+                await cursor.execute("SELECT coins, artifact FROM command WHERE user_id={}".format(quiz_answer.user.id))
+                command_data = re.split(r',', re.sub(r'[\)\(]', '', str(await cursor.fetchone())))
+                coins_command = re.sub(r' ', '', command_data[0])
+                artifact_command = re.sub(r' ', '', command_data[1])
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_five + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command)
 
             if question == config.task_six+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_six1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_six+'_'+config.task_number2, option=config.options_task_six2.get('option'), answer=config.options_task_six2.get('answer'), hint_number=kb.kb_HintSix_2, cursor=cursor, conn=conn)
@@ -518,7 +538,11 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_six+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_six4.get('coin'), chat_id=chat_id, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_six + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
+                await cursor.execute("SELECT coins, artifact FROM command WHERE user_id={}".format(quiz_answer.user.id))
+                command_data = re.split(r',', re.sub(r'[\)\(]', '', str(await cursor.fetchone())))
+                coins_command = re.sub(r' ', '', command_data[0])
+                artifact_command = re.sub(r' ', '', command_data[1])
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_six + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command)
 
             if question == config.task_seven+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_seven1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_seven+'_'+config.task_number2, option=config.options_task_seven2.get('option'), answer=config.options_task_seven2.get('answer'), hint_number=kb.kb_HintSeven_2, cursor=cursor, conn=conn)
@@ -529,7 +553,11 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_seven+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_seven4.get('coin'), chat_id=chat_id, artifact='artifact_seven', artifact_command=artifact_command, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_seven + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
+                await cursor.execute("SELECT coins, artifact FROM command WHERE user_id={}".format(quiz_answer.user.id))
+                command_data = re.split(r',', re.sub(r'[\)\(]', '', str(await cursor.fetchone())))
+                coins_command = re.sub(r' ', '', command_data[0])
+                artifact_command = re.sub(r' ', '', command_data[1])
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_seven + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command)
 
             if question == config.task_eight+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_eight1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_eight+'_'+config.task_number2, option=config.options_task_eight2.get('option'), answer=config.options_task_eight2.get('answer'), hint_number=kb.kb_HintEight_2, cursor=cursor, conn=conn)
@@ -540,7 +568,11 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_eight+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_eight4.get('coin'), chat_id=chat_id, artifact='artifact_eight', artifact_command=artifact_command, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_eight + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
+                await cursor.execute("SELECT coins, artifact FROM command WHERE user_id={}".format(quiz_answer.user.id))
+                command_data = re.split(r',', re.sub(r'[\)\(]', '', str(await cursor.fetchone())))
+                coins_command = re.sub(r' ', '', command_data[0])
+                artifact_command = re.sub(r' ', '', command_data[1])
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_eight + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command)
 
             if question == config.task_nine+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_nine1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_nine+'_'+config.task_number2, option=config.options_task_nine2.get('option'), answer=config.options_task_nine2.get('answer'), hint_number=kb.kb_HintNine_2, cursor=cursor, conn=conn)
@@ -551,7 +583,11 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_nine+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_nine4.get('coin'), chat_id=chat_id, artifact='artifact_nine', artifact_command=artifact_command, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_nine + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
+                await cursor.execute("SELECT coins, artifact FROM command WHERE user_id={}".format(quiz_answer.user.id))
+                command_data = re.split(r',', re.sub(r'[\)\(]', '', str(await cursor.fetchone())))
+                coins_command = re.sub(r' ', '', command_data[0])
+                artifact_command = re.sub(r' ', '', command_data[1])
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_nine + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command)
 
             if question == config.task_ten+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_ten1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_ten+'_'+config.task_number2, option=config.options_task_ten2.get('option'), answer=config.options_task_ten2.get('answer'), hint_number=kb.kb_HintTen_2, cursor=cursor, conn=conn)
@@ -562,7 +598,11 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_ten+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_ten4.get('coin'), chat_id=chat_id, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_ten + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
+                await cursor.execute("SELECT coins, artifact FROM command WHERE user_id={}".format(quiz_answer.user.id))
+                command_data = re.split(r',', re.sub(r'[\)\(]', '', str(await cursor.fetchone())))
+                coins_command = re.sub(r' ', '', command_data[0])
+                artifact_command = re.sub(r' ', '', command_data[1])
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_ten + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command)
 
             if question == config.task_dop_blitz1:
                 await quiz_poll(user_id=quiz_answer.user.id, delete_message=False, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_blitz1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_dop_blitz2, option=config.options_task_blitz2.get('option'), answer=config.options_task_blitz2.get('answer'), cursor=cursor, conn=conn)
@@ -589,12 +629,20 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_dop_blitz12:
                 await quiz_poll(user_id=quiz_answer.user.id, delete_message=False, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_blitz12.get('coin'), chat_id=chat_id, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.blitz + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
+                await cursor.execute("SELECT coins, artifact FROM command WHERE user_id={}".format(quiz_answer.user.id))
+                command_data = re.split(r',', re.sub(r'[\)\(]', '', str(await cursor.fetchone())))
+                coins_command = re.sub(r' ', '', command_data[0])
+                artifact_command = re.sub(r' ', '', command_data[1])
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.blitz + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command)
 
             if question == config.task_dop_scientist:
                 await quiz_poll(user_id=quiz_answer.user.id, delete_message=False, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_scientist.get('coin'), chat_id=chat_id, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.scientist + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
+                await cursor.execute("SELECT coins, artifact FROM command WHERE user_id={}".format(quiz_answer.user.id))
+                command_data = re.split(r',', re.sub(r'[\)\(]', '', str(await cursor.fetchone())))
+                coins_command = re.sub(r' ', '', command_data[0])
+                artifact_command = re.sub(r' ', '', command_data[1])
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.scientist + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command)
 
             if question == config.task_eleven+'_'+config.task_number1:
                 if correct_answer is True:
@@ -602,14 +650,13 @@ async def process_poll_handler(quiz_answer: types.Poll):
                 await quiz_poll(user_id=quiz_answer.user.id, delete_message=False, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_eleven.get('coin'), chat_id=chat_id, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
 
-                await cursor.execute("SELECT color, coins, artifact, start_time FROM command WHERE user_id={}".format(quiz_answer.user.id))
+                await cursor.execute("SELECT coins, artifact, start_time FROM command WHERE user_id={}".format(quiz_answer.user.id))
                 command_data = re.split(r',', re.sub(r'[\)\(]', '', str(await cursor.fetchone())))
-                color_command = re.sub(r'[ \']', '', command_data[0])
-                coins_command = re.sub(r' ', '', command_data[1])
-                artifact_command = re.sub(r' ', '', command_data[2])
-                running_time = re.split(r'\.', str(datetime.now() - datetime.fromtimestamp(int(re.sub(r' ', '', command_data[3])))), 1)[0]
+                coins_command = re.sub(r' ', '', command_data[0])
+                artifact_command = re.sub(r' ', '', command_data[1])
+                running_time = re.split(r'\.', str(datetime.now() - datetime.fromtimestamp(int(re.sub(r' ', '', command_data[2])))), 1)[0]
 
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_eleven + config.end_coins_number + coins_command + config.end_artifact_number + strartifact_command + config.end_running_time + str(running_time))
+                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_eleven + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command + config.end_running_time + str(running_time))
                 await bot.send_message(quiz_answer.user.id, config.say_you_end_game + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command + config.end_running_time + str(running_time))
                 await bot.send_message(chat_id, config.say_you_end_game + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command + config.end_running_time + str(running_time))
                 await bot.send_message(os.environ.get('RESULT_CHAT_ID'), 'Цвет команды: ' + color_command + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command + config.end_running_time + str(running_time))
