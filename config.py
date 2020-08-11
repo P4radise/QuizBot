@@ -27,7 +27,7 @@ color_purple = 'Фиолетовые'
 color_pink = 'Розовые'
 
 chat_command = 'Чат комманды:'
-select_color_button = 'Выберете цвет вашей команды:'
+select_color_button = 'Выберите цвет вашей команды:'
 choise_status = 'Выберите ваш статус в команде:'
 start_location = 'Начать прохождение локации:'
 check_start_location = 'Вы уверены, что хотите начать следующую локацию?'
