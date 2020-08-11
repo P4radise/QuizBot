@@ -169,7 +169,7 @@ async def process_send_start_later_location(message: types.Message):
             kb_startLocation = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True).add(btnStartLocation)
             await bot.send_message(message.from_user.id, config.check_start_location, reply_markup=kb_startLocation)
 
-@dp.message_handler(lambda message: message.text in [config.blitz, config.scientist, config.say_continue_location])
+@dp.message_handler(lambda message: message.text in [config.blitz, config.scientist, config.say_continue_location, config.say_restart])
 async def process_send_legend(message: types.Message):
     async with aiosqlite3.connect("quizbot.db") as conn:
         async with conn.cursor() as cursor: 
@@ -223,68 +223,71 @@ async def process_send_legend(message: types.Message):
                     else:
                         await bot.send_message(message.from_user.id, config.say_you_end_game)
 
-            if message.text == config.say_continue_location:
-                sql_get_location_number = "SELECT " + current_location + " \
-                                            FROM locations v_loc \
-                                            JOIN command v_com on (v_com.color = v_loc.location_color) \
-                                            WHERE user_id={}".format(message.from_user.id)
-                await cursor.execute(sql_get_location_number)
-                current_location = re.sub(r'[\)\(\']', '', str(await cursor.fetchone()))[:-1]
-                if config.location_one in current_location:
-                    btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask1')
-                    kb_Task = InlineKeyboardMarkup().add(btnTask)
-                    await bot.send_photo(message.from_user.id, open('legend/legend_one.png', 'rb'), reply_markup=kb_Task)
-                    await bot.send_photo(chat_id, open('legend/legend_one.png', 'rb'))
-                if config.location_two in current_location:
-                    btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask2')
-                    kb_Task = InlineKeyboardMarkup().add(btnTask)
-                    await bot.send_photo(message.from_user.id, open('legend/legend_two.png', 'rb'), reply_markup=kb_Task)
-                    await bot.send_photo(chat_id, open('legend/legend_two.png', 'rb'))
-                if config.location_three in current_location:
-                    btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask3')
-                    kb_Task = InlineKeyboardMarkup().add(btnTask)
-                    await bot.send_photo(message.from_user.id, open('legend/legend_three.png', 'rb'), reply_markup=kb_Task)
-                    await bot.send_photo(chat_id, open('legend/legend_three.png', 'rb'))
-                if config.location_four in current_location:
-                    btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask4')
-                    kb_Task = InlineKeyboardMarkup().add(btnTask)
-                    await bot.send_photo(message.from_user.id, open('legend/legend_four.png', 'rb'), reply_markup=kb_Task)
-                    await bot.send_photo(chat_id, open('legend/legend_four.png', 'rb'))
-                if config.location_five in current_location:
-                    btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask5')
-                    kb_Task = InlineKeyboardMarkup().add(btnTask)
-                    await bot.send_photo(message.from_user.id, open('legend/legend_five.png', 'rb'), reply_markup=kb_Task)
-                    await bot.send_photo(chat_id, open('legend/legend_five.png', 'rb'))
-                if config.location_six in current_location:
-                    btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask6')
-                    kb_Task = InlineKeyboardMarkup().add(btnTask)
-                    await bot.send_photo(message.from_user.id, open('legend/legend_six.png', 'rb'), reply_markup=kb_Task)
-                    await bot.send_photo(chat_id, open('legend/legend_six.png', 'rb'))
-                if config.location_seven in current_location:
-                    btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask7')
-                    kb_Task = InlineKeyboardMarkup().add(btnTask)
-                    await bot.send_photo(message.from_user.id, open('legend/legend_seven.png', 'rb'), reply_markup=kb_Task)
-                    await bot.send_photo(chat_id, open('legend/legend_seven.png', 'rb'))
-                if config.location_eight in current_location:
-                    btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask8')
-                    kb_Task = InlineKeyboardMarkup().add(btnTask)
-                    await bot.send_photo(message.from_user.id, open('legend/legend_eight.png', 'rb'), reply_markup=kb_Task)
-                    await bot.send_photo(chat_id, open('legend/legend_eight.png', 'rb'))
-                if config.location_nine in current_location:
-                    btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask9')
-                    kb_Task = InlineKeyboardMarkup().add(btnTask)
-                    await bot.send_photo(message.from_user.id, open('legend/legend_nine.png', 'rb'), reply_markup=kb_Task)
-                    await bot.send_photo(chat_id, open('legend/legend_nine.png', 'rb'))
-                if config.location_ten in current_location:
-                    btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask10')
-                    kb_Task = InlineKeyboardMarkup().add(btnTask)
-                    await bot.send_photo(message.from_user.id, open('legend/legend_ten.png', 'rb'), reply_markup=kb_Task)
-                    await bot.send_photo(chat_id, open('legend/legend_ten.png', 'rb'))
-                if config.location_eleven in current_location:
-                    btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask11')
-                    kb_Task = InlineKeyboardMarkup().add(btnTask)
-                    await bot.send_photo(message.from_user.id, open('legend/legend_eleven.png', 'rb'), reply_markup=kb_Task)
-                    await bot.send_photo(chat_id, open('legend/legend_eleven.png', 'rb'))
+            if message.text == config.say_continue_location or message.text == config.say_restart:
+                if end_game == 0:
+                    sql_get_location_number = "SELECT " + current_location + " \
+                                                 FROM locations v_loc \
+                                                 JOIN command v_com on (v_com.color = v_loc.location_color) \
+                                                WHERE user_id={}".format(message.from_user.id)
+                    await cursor.execute(sql_get_location_number)
+                    current_location = re.sub(r'[\)\(\']', '', str(await cursor.fetchone()))[:-1]
+                    if config.location_one in current_location:
+                        btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask1')
+                        kb_Task = InlineKeyboardMarkup().add(btnTask)
+                        await bot.send_photo(message.from_user.id, open('legend/legend_one.png', 'rb'), reply_markup=kb_Task)
+                        await bot.send_photo(chat_id, open('legend/legend_one.png', 'rb'))
+                    if config.location_two in current_location:
+                        btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask2')
+                        kb_Task = InlineKeyboardMarkup().add(btnTask)
+                        await bot.send_photo(message.from_user.id, open('legend/legend_two.png', 'rb'), reply_markup=kb_Task)
+                        await bot.send_photo(chat_id, open('legend/legend_two.png', 'rb'))
+                    if config.location_three in current_location:
+                        btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask3')
+                        kb_Task = InlineKeyboardMarkup().add(btnTask)
+                        await bot.send_photo(message.from_user.id, open('legend/legend_three.png', 'rb'), reply_markup=kb_Task)
+                        await bot.send_photo(chat_id, open('legend/legend_three.png', 'rb'))
+                    if config.location_four in current_location:
+                        btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask4')
+                        kb_Task = InlineKeyboardMarkup().add(btnTask)
+                        await bot.send_photo(message.from_user.id, open('legend/legend_four.png', 'rb'), reply_markup=kb_Task)
+                        await bot.send_photo(chat_id, open('legend/legend_four.png', 'rb'))
+                    if config.location_five in current_location:
+                        btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask5')
+                        kb_Task = InlineKeyboardMarkup().add(btnTask)
+                        await bot.send_photo(message.from_user.id, open('legend/legend_five.png', 'rb'), reply_markup=kb_Task)
+                        await bot.send_photo(chat_id, open('legend/legend_five.png', 'rb'))
+                    if config.location_six in current_location:
+                        btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask6')
+                        kb_Task = InlineKeyboardMarkup().add(btnTask)
+                        await bot.send_photo(message.from_user.id, open('legend/legend_six.png', 'rb'), reply_markup=kb_Task)
+                        await bot.send_photo(chat_id, open('legend/legend_six.png', 'rb'))
+                    if config.location_seven in current_location:
+                        btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask7')
+                        kb_Task = InlineKeyboardMarkup().add(btnTask)
+                        await bot.send_photo(message.from_user.id, open('legend/legend_seven.png', 'rb'), reply_markup=kb_Task)
+                        await bot.send_photo(chat_id, open('legend/legend_seven.png', 'rb'))
+                    if config.location_eight in current_location:
+                        btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask8')
+                        kb_Task = InlineKeyboardMarkup().add(btnTask)
+                        await bot.send_photo(message.from_user.id, open('legend/legend_eight.png', 'rb'), reply_markup=kb_Task)
+                        await bot.send_photo(chat_id, open('legend/legend_eight.png', 'rb'))
+                    if config.location_nine in current_location:
+                        btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask9')
+                        kb_Task = InlineKeyboardMarkup().add(btnTask)
+                        await bot.send_photo(message.from_user.id, open('legend/legend_nine.png', 'rb'), reply_markup=kb_Task)
+                        await bot.send_photo(chat_id, open('legend/legend_nine.png', 'rb'))
+                    if config.location_ten in current_location:
+                        btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask10')
+                        kb_Task = InlineKeyboardMarkup().add(btnTask)
+                        await bot.send_photo(message.from_user.id, open('legend/legend_ten.png', 'rb'), reply_markup=kb_Task)
+                        await bot.send_photo(chat_id, open('legend/legend_ten.png', 'rb'))
+                    if config.location_eleven in current_location:
+                        btnTask = InlineKeyboardButton(config.say_get_task, callback_data='btnGetTask11')
+                        kb_Task = InlineKeyboardMarkup().add(btnTask)
+                        await bot.send_photo(message.from_user.id, open('legend/legend_eleven.png', 'rb'), reply_markup=kb_Task)
+                        await bot.send_photo(chat_id, open('legend/legend_eleven.png', 'rb'))
+                else:
+                    await bot.send_message(message.from_user.id, config.say_you_end_game)
 
 @dp.callback_query_handler(regexp = r'^btnGetTask\w*')
 async def process_send_additional_location_data(call: types.CallbackQuery):
@@ -304,43 +307,43 @@ async def process_send_additional_location_data(call: types.CallbackQuery):
             await bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, None, None)
             if call.data == 'btnGetTask12':
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_dop_blitz1, option=config.options_task_blitz1.get('option'), answer=config.options_task_blitz1.get('answer'), location_number=current_location, cursor=cursor, conn=conn)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.blitz)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_start_location + config.blitz)
             if call.data == 'btnGetTask13':
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_dop_scientist, open_period=420, option=config.options_task_scientist.get('option'), answer=config.options_task_scientist.get('answer'), location_number=current_location, cursor=cursor, conn=conn)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.scientist)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_start_location + config.scientist)
             if call.data == 'btnGetTask1':
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_one+'_'+config.task_number1, option=config.options_task_one1.get('option'), answer=config.options_task_one1.get('answer'), hint_number=kb.kb_HintOne_1, location_number=next_location, cursor=cursor, conn=conn)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.location_one)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_start_location + config.location_one)
             if call.data == 'btnGetTask2':
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_two+'_'+config.task_number1, option=config.options_task_two1.get('option'), answer=config.options_task_two1.get('answer'), hint_number=kb.kb_HintTwo_1, location_number=next_location, cursor=cursor, conn=conn)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.location_two)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_start_location + config.location_two)
             if call.data == 'btnGetTask3':
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_three+'_'+config.task_number1, option=config.options_task_three1.get('option'), answer=config.options_task_three1.get('answer'), hint_number=kb.kb_HintThree_1, location_number=next_location, cursor=cursor, conn=conn)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.location_three)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_start_location + config.location_three)
             if call.data == 'btnGetTask4':
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_four+'_'+config.task_number1, option=config.options_task_four1.get('option'), answer=config.options_task_four1.get('answer'), hint_number=kb.kb_HintFour_1, location_number=next_location, cursor=cursor, conn=conn)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.location_four)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_start_location + config.location_four)
             if call.data == 'btnGetTask5':
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_five+'_'+config.task_number1, option=config.options_task_five1.get('option'), answer=config.options_task_five1.get('answer'), hint_number=kb.kb_HintFive_1, location_number=next_location, cursor=cursor, conn=conn)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.location_five)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_start_location + config.location_five)
             if call.data == 'btnGetTask6':
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_six+'_'+config.task_number1, option=config.options_task_six1.get('option'), answer=config.options_task_six1.get('answer'), hint_number=kb.kb_HintSix_1, location_number=next_location, cursor=cursor, conn=conn)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.location_six)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_start_location + config.location_six)
             if call.data == 'btnGetTask7':
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_seven+'_'+config.task_number1, option=config.options_task_seven1.get('option'), answer=config.options_task_seven1.get('answer'), hint_number=kb.kb_HintSeven_1, location_number=next_location, cursor=cursor, conn=conn)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.location_seven)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_start_location + config.location_seven)
             if call.data == 'btnGetTask8':
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_eight+'_'+config.task_number1, option=config.options_task_eight1.get('option'), answer=config.options_task_eight1.get('answer'), hint_number=kb.kb_HintEight_1, location_number=next_location, cursor=cursor, conn=conn)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.location_eight)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_start_location + config.location_eight)
             if call.data == 'btnGetTask9':
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_nine+'_'+config.task_number1, option=config.options_task_nine1.get('option'), answer=config.options_task_nine1.get('answer'), hint_number=kb.kb_HintNine_1, location_number=next_location, cursor=cursor, conn=conn)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.location_nine)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_start_location + config.location_nine)
             if call.data == 'btnGetTask10':
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_ten+'_'+config.task_number1, option=config.options_task_ten1.get('option'), answer=config.options_task_ten1.get('answer'), hint_number=kb.kb_HintTen_1, location_number=next_location, cursor=cursor, conn=conn)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.location_ten)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_start_location + config.location_ten)
             if call.data == 'btnGetTask11':
                 await quiz_poll(user_id=call.message.chat.id, delete_message=False, chat_id=chat_id, task=config.task_eleven+'_'+config.task_number1, open_period=480, option=config.options_task_eleven.get('option'), answer=config.options_task_eleven.get('answer'), hint_number=kb.kb_HintEleven_1, cursor=cursor, conn=conn)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_start_location + config.location_eleven)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_start_location + config.location_eleven)
 
 async def quiz_poll(user_id=0, delete_message=True, last_hint_id=None, correct_answer=None, coins_command=None, coin=None, artifact=None, artifact_command=None, chat_id=0, end_date=None, task=None, open_period=None, option=None, answer=None, hint_number=None, location_number=None, cursor=None, conn=None):
     try:
@@ -460,7 +463,7 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_one+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_one4.get('coin'), chat_id=chat_id, artifact='artifact_one', artifact_command=artifact_command, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_one)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_one + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
 
             if question == config.task_two+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_two1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_two+'_'+config.task_number2, option=config.options_task_two2.get('option'), answer=config.options_task_two2.get('answer'), hint_number=kb.kb_HintTwo_2, cursor=cursor, conn=conn)
@@ -471,7 +474,7 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_two+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_two4.get('coin'), chat_id=chat_id, artifact='artifact_two', artifact_command=artifact_command, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_two)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_two + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
 
             if question == config.task_three+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_three1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_three+'_'+config.task_number2, option=config.options_task_three2.get('option'), answer=config.options_task_three2.get('answer'), hint_number=kb.kb_HintThree_2, cursor=cursor, conn=conn)
@@ -482,7 +485,7 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_three+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_three4.get('coin'), chat_id=chat_id, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_three)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_three + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
 
             if question == config.task_four+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_four1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_four+'_'+config.task_number2, option=config.options_task_four2.get('option'), answer=config.options_task_four2.get('answer'), hint_number=kb.kb_HintFour_2, cursor=cursor, conn=conn)
@@ -493,7 +496,7 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_four+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_four4.get('coin'), chat_id=chat_id, artifact='artifact_four', artifact_command=artifact_command, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_four)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_four + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
 
             if question == config.task_five+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_five1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_five+'_'+config.task_number2, option=config.options_task_five2.get('option'), answer=config.options_task_five2.get('answer'), hint_number=kb.kb_HintFive_2, cursor=cursor, conn=conn)
@@ -504,7 +507,7 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_five+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_five4.get('coin'), chat_id=chat_id, artifact='artifact_five', artifact_command=artifact_command, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_five)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_five + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
 
             if question == config.task_six+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_six1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_six+'_'+config.task_number2, option=config.options_task_six2.get('option'), answer=config.options_task_six2.get('answer'), hint_number=kb.kb_HintSix_2, cursor=cursor, conn=conn)
@@ -515,7 +518,7 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_six+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_six4.get('coin'), chat_id=chat_id, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_six)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_six + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
 
             if question == config.task_seven+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_seven1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_seven+'_'+config.task_number2, option=config.options_task_seven2.get('option'), answer=config.options_task_seven2.get('answer'), hint_number=kb.kb_HintSeven_2, cursor=cursor, conn=conn)
@@ -526,7 +529,7 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_seven+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_seven4.get('coin'), chat_id=chat_id, artifact='artifact_seven', artifact_command=artifact_command, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_seven)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_seven + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
 
             if question == config.task_eight+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_eight1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_eight+'_'+config.task_number2, option=config.options_task_eight2.get('option'), answer=config.options_task_eight2.get('answer'), hint_number=kb.kb_HintEight_2, cursor=cursor, conn=conn)
@@ -537,7 +540,7 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_eight+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_eight4.get('coin'), chat_id=chat_id, artifact='artifact_eight', artifact_command=artifact_command, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_eight)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_eight + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
 
             if question == config.task_nine+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_nine1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_nine+'_'+config.task_number2, option=config.options_task_nine2.get('option'), answer=config.options_task_nine2.get('answer'), hint_number=kb.kb_HintNine_2, cursor=cursor, conn=conn)
@@ -548,7 +551,7 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_nine+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_nine4.get('coin'), chat_id=chat_id, artifact='artifact_nine', artifact_command=artifact_command, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_nine)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_nine + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
 
             if question == config.task_ten+'_'+config.task_number1:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_ten1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_ten+'_'+config.task_number2, option=config.options_task_ten2.get('option'), answer=config.options_task_ten2.get('answer'), hint_number=kb.kb_HintTen_2, cursor=cursor, conn=conn)
@@ -559,7 +562,7 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_ten+'_'+config.task_number4:
                 await quiz_poll(user_id=quiz_answer.user.id, last_hint_id=last_hint_id, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_ten4.get('coin'), chat_id=chat_id, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_ten)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.location_ten + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
 
             if question == config.task_dop_blitz1:
                 await quiz_poll(user_id=quiz_answer.user.id, delete_message=False, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_blitz1.get('coin'), chat_id=chat_id, end_date=end_date, task=config.task_dop_blitz2, option=config.options_task_blitz2.get('option'), answer=config.options_task_blitz2.get('answer'), cursor=cursor, conn=conn)
@@ -586,12 +589,12 @@ async def process_poll_handler(quiz_answer: types.Poll):
             if question == config.task_dop_blitz12:
                 await quiz_poll(user_id=quiz_answer.user.id, delete_message=False, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_blitz12.get('coin'), chat_id=chat_id, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.blitz)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.blitz + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
 
             if question == config.task_dop_scientist:
                 await quiz_poll(user_id=quiz_answer.user.id, delete_message=False, correct_answer=correct_answer, coins_command=coins_command, coin=config.options_task_scientist.get('coin'), chat_id=chat_id, cursor=cursor, conn=conn)
                 await bot.send_message(quiz_answer.user.id, config.end_location)
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.scientist)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), color_command + config.admin_end_location + config.scientist + config.end_coins_number + str(coins_command) + config.end_artifact_number + str(artifact_command))
 
             if question == config.task_eleven+'_'+config.task_number1:
                 if correct_answer is True:
@@ -606,10 +609,10 @@ async def process_poll_handler(quiz_answer: types.Poll):
                 artifact_command = re.sub(r' ', '', command_data[2])
                 running_time = re.split(r'\.', str(datetime.now() - datetime.fromtimestamp(int(re.sub(r' ', '', command_data[3])))), 1)[0]
 
-                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), 'Цвет команды: ' + color_command + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command + config.end_running_time + str(running_time))
+                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_eleven + config.end_coins_number + coins_command + config.end_artifact_number + strartifact_command + config.end_running_time + str(running_time))
                 await bot.send_message(quiz_answer.user.id, config.say_you_end_game + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command + config.end_running_time + str(running_time))
                 await bot.send_message(chat_id, config.say_you_end_game + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command + config.end_running_time + str(running_time))
-                await bot.send_message(os.environ.get('ADMIN_CHAT_ID'), color_command + config.admin_end_location + config.location_eleven)
+                await bot.send_message(os.environ.get('RESULT_CHAT_ID'), 'Цвет команды: ' + color_command + config.end_coins_number + coins_command + config.end_artifact_number + artifact_command + config.end_running_time + str(running_time))
                 await cursor.execute("UPDATE command SET hidden_location='{}', end_game={} WHERE user_id={}".format(config.scientist + ';' + config.blitz, 1, quiz_answer.user.id))
                 await conn.commit()
 

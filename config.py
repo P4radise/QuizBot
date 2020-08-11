@@ -13,6 +13,7 @@ say_get_task = 'Получить задание локации'
 say_you_member = 'Вы участник команды '
 say_you_end_game = 'Вы завершили игру!'
 say_you_already_passed_location = 'Вы уже проходили локацию '
+say_restart = 'Рестарт'
 
 color_white = 'Белые'
 color_gray = 'Серые'
